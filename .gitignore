@@ -1,0 +1,9 @@
+.env/
+.idea/
+
+.ash_history
+.python_history
+
+__pycache__/
+*.py[cod]
+*.sqlite3
