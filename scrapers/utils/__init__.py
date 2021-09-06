@@ -1,3 +1,4 @@
+from .xml_creator import OutputXML
 
 
 class vendor_code_generator: # noqa
@@ -8,7 +9,7 @@ class vendor_code_generator: # noqa
     :param prefix: A few letters in upper case that describe the name of the company.
 
     :param start: Company attribute 'last_generated_product_id' from database.
-        Positive integer [0, 10e4)
+        Positive integer [0, 10e5)
 
     Usage:
     >>> c = vendor_code_generator('YB', 600)
@@ -44,3 +45,9 @@ class vendor_code_generator: # noqa
 
     def __iter__(self):
         return self
+
+
+__all__ = (
+    OutputXML,
+    vendor_code_generator,
+)
