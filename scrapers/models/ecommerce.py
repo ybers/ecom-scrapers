@@ -90,4 +90,4 @@ class Specification(Base):
     __tablename__ = 'specification'
     name = Column(String, primary_key=True)
 
-    product = relationship(Product, back_populates='specifications')
+    product = relationship('ProductSpecification', back_populates='specifications')
