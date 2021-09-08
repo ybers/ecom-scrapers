@@ -8,7 +8,7 @@ from .base import Base, TimeStampMixin
 
 
 category_product_relation = Table(
-    'product_category_relation', Base.metadata,
+    'category_product', Base.metadata,
     Column('product_url', ForeignKey('product.url'), primary_key=True),
     Column('category_url', ForeignKey('category.url'), primary_key=True),
 )
@@ -26,9 +26,8 @@ class ProductSpecification(Base):
 
 class Company(TimeStampMixin, Base):
     __tablename__ = 'company'
-    id = Column(Integer, primary_key=True)
     name = Column(String, nullable=False)
-    url = Column(String, unique=True, nullable=False)
+    url = Column(String, primary_key=True)
     last_generated_product_id = Column(Integer, default=0)
 
     categories = relationship('Category', back_populates='owner')
@@ -38,13 +37,13 @@ class Company(TimeStampMixin, Base):
 class Category(TimeStampMixin, Base):
     __tablename__ = 'category'
     __table_args__ = (
-        UniqueConstraint('url', 'company_id'),
+        UniqueConstraint('url', 'company_url'),
     )
     id = Column(Integer, autoincrement=True)
     parent_id = Column(Integer, ForeignKey('category.id'))
     name = Column(String(length=255))
     url = Column(String, primary_key=True)
-    company_id = Column(Integer, ForeignKey('company.id'))
+    company_url = Column(Integer, ForeignKey('company.url'))
 
     owner = relationship(Company, back_populates='categories')
     children = relationship('Category')
@@ -56,7 +55,7 @@ class Category(TimeStampMixin, Base):
 class Product(TimeStampMixin, Base):
     __tablename__ = 'product'
     __table_args__ = (
-        UniqueConstraint('url', 'company_id'),
+        UniqueConstraint('url', 'company_url'),
     )
     id = Column(Integer, autoincrement=True)
     name = Column(String(length=255))
@@ -64,7 +63,7 @@ class Product(TimeStampMixin, Base):
     quantity = Column(Integer, nullable=True)
     available = Column(Boolean, default=False)
     vendor_code = Column(String, nullable=False)
-    company_id = Column(Integer, ForeignKey('company.id'))
+    company_url = Column(Integer, ForeignKey('company.url'))
     price = Column(Integer, nullable=False)
     old_price = Column(Integer)
     purchase_price = Column(Integer, default=0)
@@ -72,16 +71,16 @@ class Product(TimeStampMixin, Base):
 
     owner = relationship(Company, back_populates='products')
     images = relationship('Image', back_populates='product')
-    specifications = relationship("ProductSpecification", backref="product")
+    specifications = relationship("ProductSpecification", back_populates="product")
 
 
 class Image(Base):
     __tablename__ = 'image'
     __table_args__ = (
-        UniqueConstraint('url', 'product_id'),
+        UniqueConstraint('url', 'product_url'),
     )
     url = Column(String, primary_key=True)
-    product_id = Column(Integer, ForeignKey('product.id'), primary_key=True)
+    product_url = Column(String, ForeignKey('product.url'), primary_key=True)
 
     product = relationship(Product, back_populates='images')
 
@@ -90,4 +89,4 @@ class Specification(Base):
     __tablename__ = 'specification'
     name = Column(String, primary_key=True)
 
-    product = relationship('ProductSpecification', back_populates='specifications')
+    products = relationship('ProductSpecification', back_populates='specification')
